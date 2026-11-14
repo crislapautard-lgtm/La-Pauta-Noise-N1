@@ -1,0 +1,36 @@
+name: Build La Pauta Noise N1
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+          - os: macos-latest
+            name: macOS
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release --parallel
+
+      - name: Subir artefactos
+        uses: actions/upload-artifact@v4
+        with:
+          name: LaPautaNoiseN1-${{ matrix.name }}
+          path: build/LaPautaNoiseN1_artefacts/Release/
+          if-no-files-found: error
