@@ -1,0 +1,57 @@
+name: Build La Pauta Noise N1
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            name: Windows
+          - os: macos-latest
+            name: macOS
+    runs-on: ${{ matrix.os }}
+    name: ${{ matrix.name }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configurar CMake
+        run: cmake -B build -DCMAKE_BUILD_TYPE=Release
+
+      - name: Compilar
+        run: cmake --build build --config Release --parallel
+
+      - name: Crear instalador (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $iscc = "C:\Program Files (x86)\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress }
+          & $iscc "installer\windows\LaPautaNoiseN1.iss"
+
+      - name: Crear instalador (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          chmod +x installer/mac/build_pkg.sh
+          installer/mac/build_pkg.sh
+
+      - name: Subir instalador
+        uses: actions/upload-artifact@v4
+        with:
+          name: Instalador-${{ matrix.name }}
+          path: dist/*
+          if-no-files-found: error
+
+      - name: Subir plugins sueltos
+        uses: actions/upload-artifact@v4
+        with:
+          name: LaPautaNoiseN1-${{ matrix.name }}
+          path: build/LaPautaNoiseN1_artefacts/Release/
+          if-no-files-found: error
