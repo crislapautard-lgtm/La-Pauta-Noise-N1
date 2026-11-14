@@ -1,1 +1,26 @@
-aa
+<?xml version="1.0" encoding="utf-8"?>
+<installer-gui-script minSpecVersion="2">
+    <title>La Pauta Noise N1</title>
+    <options customize="allow" require-scripts="false" hostArchitectures="arm64,x86_64"/>
+    <domains enable_anywhere="false" enable_localSystem="true"/>
+
+    <choices-outline>
+        <line choice="vst3"/>
+        <line choice="au"/>
+        <line choice="app"/>
+    </choices-outline>
+
+    <choice id="vst3" title="Plugin VST3" description="Se instala en /Library/Audio/Plug-Ins/VST3">
+        <pkg-ref id="com.lapauta.noisen1.vst3"/>
+    </choice>
+    <choice id="au" title="Plugin Audio Unit (AU)" description="Se instala en /Library/Audio/Plug-Ins/Components">
+        <pkg-ref id="com.lapauta.noisen1.au"/>
+    </choice>
+    <choice id="app" title="Aplicacion Standalone" description="Se instala en /Applications">
+        <pkg-ref id="com.lapauta.noisen1.app"/>
+    </choice>
+
+    <pkg-ref id="com.lapauta.noisen1.vst3" version="1.0.0" onConclusion="none">vst3.pkg</pkg-ref>
+    <pkg-ref id="com.lapauta.noisen1.au" version="1.0.0" onConclusion="none">au.pkg</pkg-ref>
+    <pkg-ref id="com.lapauta.noisen1.app" version="1.0.0" onConclusion="none">app.pkg</pkg-ref>
+</installer-gui-script>
